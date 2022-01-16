@@ -1,0 +1,43 @@
+# Installs dependencies needed by Kubernetes: A container runtime (Docker), Kubelet, Kubcectl
+# Kubeadm helps to initialise the Kubernetes cluster
+
+- hosts: all
+  become: yes
+  tasks:
+  - name: "Install Docker"
+    apt:
+      name: docker.io
+      state: present
+      update_cache: true
+  - name: "Install APT Transport HTTPS"
+    apt:
+      name: apt-transport-https
+      state: present
+  - name: "Add Kubernetes apt key"
+    apt_key:
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      state: present
+  - name: "Add Kubernetes APT repository"
+    apt_repository:
+      repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+      state: present
+      filename: 'kubernetes'
+  - name: "install kubelet"
+    apt:
+      name: kubelet=1.20.0-00
+      state: present
+      update_cache: true
+  - name: "Install Kube adm"
+    apt:
+      name: kubeadm=1.20.0-00
+      state: present
+
+- hosts: master
+  become: true
+  tasks:
+  - name: "Install kubectl"
+    apt: 
+      name: kubectl=1.20.0-00
+      state: present
+      force: true
+

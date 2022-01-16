@@ -1,0 +1,17 @@
+# Ideally, you shouldn't be running commands as the root user.
+# This playbook creates a non-root user with sudo prividelges.
+#  Skip this if you already have a user set up.
+- hosts: all
+  become: yes
+  tasks:
+    - name: create the 'ubuntu' user
+      user: name=ubuntu append=yes group=admin state=present createhome=yes shell=/bin/bash
+    - name: allow 'ubuntu' to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        line: "ubuntu ALL=(ALL) NOPASSWD: ALL"
+        validate: "visudo -cf %s"
+    - name: Setup SSH keys for user
+      authorized_key: user=ubuntu key="{{item}}"
+      with_file:
+        - ~/.ssh/path-to-key

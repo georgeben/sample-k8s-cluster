@@ -1,0 +1,19 @@
+# Installs helm which is a package manager for Kubernetes
+- hosts: all
+  become: false
+  tasks:
+    - name: creates directory to for helm script
+      file:
+        path: $HOME/helm
+        state: directory
+        mode: '0755'
+    - name: install helm package manager
+      shell: curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+      args:
+        chdir: $HOME/helm
+    - name: make helm script installable
+      file: 
+        path: $HOME/helm/get_helm.sh
+        mode: a+x
+    - name: run helm install script
+      shell: $HOME/helm/get_helm.sh
